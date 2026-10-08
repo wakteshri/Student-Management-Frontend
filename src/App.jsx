@@ -4,18 +4,19 @@ import axios from "axios"
 
 
 function App(){
+const BASE_URL='http://127.0.0.1:8000'
 
 const [students, setStudents] = useState([])
 const [id,setId] =useState('')
 const [name,setName] =useState('')
 const [course,setCourse] =useState('')
-const [idEdit,setIsEdit]=useState(false)
+const [isEdit,setIsEdit]=useState(false)
 
 console.log(id,name,course)
 
 
  async function getAllStudents(){
-  const response = await axios.get('http://127.0.0.1:8000/students')
+  const response = await axios.get(`${BASE_URL}/students`)
   setStudents(response.data)
 
 }
@@ -39,8 +40,8 @@ function storeCourse(event){
 }
 
  async function sendData(){
-  if(idEdit ==false){
-    const response =await axios.post('http://127.0.0.1:8000/students',{
+  if(isEdit ==false){
+    const response =await axios.post(`${BASE_URL}/students`,{
     id:id,
     name:name,
     course:course
@@ -48,7 +49,7 @@ function storeCourse(event){
   window.alert(response.data.detail)
   }
   else{
-    const response =await axios.put(`http://127.0.0.1:8000/students/${id}`,{
+    const response =await axios.put(`${BASE_URL}/students/${id}`,{
     id:id,
     name:name,
     course:course 
@@ -64,8 +65,17 @@ function edit(student){
   setCourse(student.course)
   setIsEdit(true)
 
-  
 }
+
+ async function deleterecord(id){
+
+  const response=await axios.delete(`${BASE_URL}/students/${id}`)
+  getAllStudents()
+  window.alert(response.data.detail)
+
+
+}
+
 return(
   <div className="container">
     <h1>Student Management System</h1>
@@ -73,7 +83,7 @@ return(
     <input type="number" placeholder="ID" onChange={storeId}value={id} ></input>
     <input type="text" placeholder="NAME" onChange={storeName} value={name}></input>
     <input type="course" placeholder="COURSE" onChange={storeCourse} value={course}></input>
-    <button onClick={sendData}>{setIsEdit ? 'Update' : 'Submit' }</button>
+    <button onClick={sendData}>{isEdit ? 'Update' : 'Submit' }</button>
   </form>
   <table>
     <thead>
@@ -94,7 +104,7 @@ return(
               <td>{student.name}</td>
               <td>{student.course}</td>
               <td><button className='edit-btn' onClick={ () => { edit(student)}}>Edit</button></td>
-              <td><button className='delete-btn'>Delete</button></td>
+              <td><button className='delete-btn' onClick={() => {deleterecord(student.id)}}>Delete</button></td>
             </tr>
           )
         })
